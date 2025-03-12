@@ -65,6 +65,8 @@ async def initial_signup(user_data: InitialSignup, db: Session = Depends(get_db)
             username=username,
             first_name=username,  # Default first name from email username
             hashed_password=get_password_hash(user_data.password),
+            is_client=user_data.is_client,  # Set is_client based on input
+
             is_active=False,  # Will be true after OTP verification
             is_verified=False,
             profile_completed=False
@@ -143,80 +145,6 @@ async def verify_email(verification: VerifyEmail, db: Session = Depends(get_db))
         user_id=str(user.id)
     )
 
-@router.post("/complete-basic-profile", response_model=StepCompletionResponse)
-async def complete_basic_profile(
-    profile: BasicProfileInfo,
-    user_id: str,
-    db: Session = Depends(get_db)
-):
-    """Third step: Complete basic profile info"""
-    user = db.query(User).filter(User.id == user_id).first()
-    
-    if not user or not user.is_verified:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="User not found or not verified"
-        )
-    
-    # Check if username already exists
-    existing_user = db.query(User).filter(User.username == profile.username).first()
-    if existing_user and existing_user.id != user.id:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Username already taken"
-        )
-    
-    # Update user info
-    user.username = profile.username
-    user.first_name = profile.firstName
-    user.last_name = profile.lastName
-    user.full_name = f"{profile.firstName} {profile.lastName}"
-    user.role = profile.role
-    user.completion_step = "contact_info"
-    
-    db.commit()
-    
-    return StepCompletionResponse(
-        message="Basic profile completed.",
-        success=True,
-        next_step="contact_info",
-        user_id=str(user.id)
-    )
-
-# Add similar endpoints for contact_info and professional_info
-
-@router.post("/complete-profile", response_model=UserResponse)
-async def complete_profile(
-    user_id: str,
-    db: Session = Depends(get_db)
-):
-    """Final step: Mark profile as completed"""
-    user = db.query(User).filter(User.id == user_id).first()
-    
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
-        )
-    
-    # Mark profile as completed
-    user.profile_completed = True
-    user.completion_step = "completed"
-    db.commit()
-    
-    return UserResponse(
-        message="Profile completed successfully.",
-        user=UserResponseData(
-            id=str(user.id),
-            username=user.username,
-            email=user.email,
-            full_name=user.full_name,
-            role=user.role,
-            is_verified=user.is_verified,
-            profile_completed=user.profile_completed,
-            completion_step=user.completion_step
-        )
-    )
 
 @router.post("/login", response_model=LoginResponse)
 async def login(
@@ -314,15 +242,21 @@ async def get_current_user_info(
     # Get profile data
     profile = db.query(UserProfile).filter(UserProfile.user_id == current_user.id).first()
     
+    # Construct full_name from first_name and last_name
+    full_name = None
+    if current_user.first_name or current_user.last_name:
+        full_name = f"{current_user.first_name or ''} {current_user.last_name or ''}".strip()
+    
     user_data = {
         "id": str(current_user.id),
         "username": current_user.username,
         "email": current_user.email,
         "first_name": current_user.first_name,
         "last_name": current_user.last_name,
-        "full_name": current_user.full_name,
+        "full_name": full_name,  # Calculate the full_name instead of trying to access it
         "role": current_user.role,
         "phone": current_user.phone,
+        "is_active": current_user.is_active,
         "is_verified": current_user.is_verified,
         "profile_completed": current_user.profile_completed,
     }
@@ -351,8 +285,10 @@ async def get_current_user_info(
             "availability": profile.availability
         }
     
-    return {"user": user_data}
-
+    # Return in the same format as login endpoint for consistency
+    return {
+        "user": user_data
+    }
 @router.post("/resend-verification", response_model=StepCompletionResponse)
 async def resend_verification(resend_data: ResendVerification, db: Session = Depends(get_db)):
     """Resend verification code to the user's email"""
@@ -405,12 +341,14 @@ async def check_email_exists(data: EmailCheck, db: Session = Depends(get_db)):
         if existing_user:
             return EmailExists(
                 exists=True,
-                message="Email is already registered. Please login instead."
+                message="Email is already registered. Please login instead.",
+                is_active=existing_user.is_active  # Add account activation status
             )
         
         return EmailExists(
             exists=False,
-            message="Email is available for registration."
+            message="Email is available for registration.",
+            is_active=None  # No account, so no activation status
         )
     except Exception as e:
         print(f"Error in check_email_exists: {str(e)}")

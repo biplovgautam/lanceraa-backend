@@ -17,10 +17,13 @@ class User(Base):
     last_name = Column(String(50), nullable=True)
     phone = Column(String(20), unique=True, index=True, nullable=True)
     
+    
+    
     # Status flags
     is_active = Column(Boolean, default=False)  # Becomes true after OTP verification
     is_verified = Column(Boolean, default=False)  # For blue checkmark verification
-    profile_completed = Column(Boolean, default=False)  # Track if profile is complete
+    profile_completed = Column(Boolean, default=False)  # Track if profile is completed
+    is_client = Column(Boolean, nullable=False) # diffrent roles for different users
     
     # For email verification
     verification_code = Column(String(6), nullable=True)

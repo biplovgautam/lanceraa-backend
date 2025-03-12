@@ -18,6 +18,8 @@ class InitialSignup(BaseModel):
         min_length=8
     )
     confirm_password: str = Field(default="StrongP@ss123", min_length=8)
+    is_client: bool = Field(..., description="True for client, False for talent/lancer")
+
 
     @validator('password')
     def validate_password(cls, v):
@@ -112,7 +114,7 @@ class UserResponseData(BaseModel):
     username: Optional[str] = None
     email: str
     full_name: Optional[str] = None
-    role: Optional[str] = None
+    is_client: bool
     is_verified: bool
     profile_completed: bool
     completion_step: Optional[str] = None
@@ -156,3 +158,4 @@ class EmailExists(BaseModel):
     """Response schema for email check"""
     exists: bool
     message: str
+    is_active: Optional[bool] = None
