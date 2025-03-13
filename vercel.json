@@ -1,14 +1,28 @@
 {
+  "version": 2,
   "builds": [
     {
-      "src": "app/main.py",
-      "use": "@vercel/python"
+      "src": "asgi.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "15mb",
+        "runtime": "python3.9"
+      },
+      {
+      "src": "build_files.sh",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "."
+      }
     }
+    },
+    
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "app/main.py"
-    }
+      "dest": "asgi.py"
+    },
+    { "src": "app/main.py", "methods": ["GET", "POST"] }
   ]
 }
