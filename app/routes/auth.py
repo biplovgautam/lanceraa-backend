@@ -8,6 +8,8 @@ import string
 from ..core.database import get_db
 from ..core.security import verify_password, create_access_token, get_password_hash, get_current_user
 from ..core.config import settings
+from ..core.email import send_verification_email, send_welcome_email
+
 from ..models.user import User, UserProfile
 from ..schemas.auth import LoginResponse, TokenData
 from ..schemas.user import (
@@ -82,6 +84,8 @@ async def initial_signup(user_data: InitialSignup, db: Session = Depends(get_db)
         db.refresh(user)
         
         # Send verification email/SMS (mock implementation for now)
+        await send_verification_email(user.email, verification_code, str(user.id))
+
         print(f"VERIFICATION CODE for {user.email}: {verification_code}")
         
         return StepCompletionResponse(

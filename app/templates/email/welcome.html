@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to {{ app_name }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background-color: #5D5FEF;
+            padding: 24px;
+            text-align: center;
+            color: white;
+        }
+        .header h1 {
+            margin: 0;
+            font-weight: 600;
+        }
+        .content {
+            padding: 32px 24px;
+        }
+        .cta-button {
+            display: inline-block;
+            background-color: #5D5FEF;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 500;
+            margin: 16px 0;
+        }
+        .footer {
+            background-color: #f5f5f5;
+            padding: 16px 24px;
+            color: #666;
+            font-size: 14px;
+            text-align: center;
+        }
+        .footer a {
+            color: #5D5FEF;
+            text-decoration: none;
+        }
+        p {
+            margin: 0 0 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>{{ app_name }}</h1>
+        </div>
+        <div class="content">
+            <p>Welcome to {{ app_name }}, {{ user_name }}!</p>
+            
+            <p>Thank you for verifying your email address. Your account is now active, and you're ready to start using our platform.</p>
+            
+            <p>With {{ app_name }}, you can:</p>
+            <ul>
+                <li>Connect with talented professionals</li>
+                <li>Find exciting projects</li>
+                <li>Build your professional network</li>
+                <li>Showcase your skills and portfolio</li>
+            </ul>
+            
+            <p>Complete your profile to get the most out of our platform!</p>
+            
+            <a href="https://lanceraa.com/onboarding" class="cta-button">Complete Your Profile</a>
+            
+            <p>If you have any questions, our support team is here to help.</p>
+            
+            <p>Best regards,</p>
+            <p>The {{ app_name }} Team</p>
+        </div>
+        <div class="footer">
+            <p>&copy; {% now 'utc', '%Y' %} {{ app_name }}. All rights reserved.</p>
+            <p>If you need assistance, contact us at <a href="mailto:{{ support_email }}">{{ support_email }}</a></p>
+        </div>
+    </div>
+</body>
+</html>
