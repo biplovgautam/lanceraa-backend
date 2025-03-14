@@ -83,8 +83,28 @@ async def initial_signup(user_data: InitialSignup, db: Session = Depends(get_db)
         db.commit()
         db.refresh(user)
         
-        # Send verification email/SMS (mock implementation for now)
-        await send_verification_email(user.email, verification_code, str(user.id))
+        try:
+            print(f"Attempting to send verification email to: {user.email}")
+            print(f"Verification code: {verification_code}")
+            print(f"User ID: {str(user.id)}")
+            
+            # Check email configuration
+            print(f"Email settings:")
+            print(f"  HOST: {settings.EMAIL_HOST}")
+            print(f"  PORT: {settings.EMAIL_PORT}")
+            print(f"  USERNAME: {settings.EMAIL_USERNAME[:3]}...{settings.EMAIL_USERNAME[-8:] if len(settings.EMAIL_USERNAME) > 10 else ''}")  # Partial display for security
+            print(f"  PASSWORD SET: {'Yes' if settings.EMAIL_PASSWORD else 'No'}")
+            
+            result = await send_verification_email(user.email, verification_code, str(user.id))
+            
+            if result:
+                print(f"✅ Verification email successfully sent to {user.email}")
+            else:
+                print(f"❌ Failed to send verification email to {user.email} (send_email_async returned False)")
+        except Exception as email_error:
+            print(f"❌ Error sending verification email: {str(email_error)}")
+            import traceback
+            traceback.print_exc()
 
         print(f"VERIFICATION CODE for {user.email}: {verification_code}")
         
@@ -142,13 +162,34 @@ async def verify_email(verification: VerifyEmail, db: Session = Depends(get_db))
     
     db.commit()
     
+    # Send welcome email with a new OTP for additional security
+    try:
+        # Generate a welcome OTP
+        welcome_otp = ''.join(random.choices(string.digits, k=6))
+        
+        # Store the welcome OTP in the user's record 
+        # (optional - if you want to verify this later)
+        user.welcome_otp = welcome_otp
+        db.commit()
+        
+        user_name = user.first_name or user.username
+        await send_welcome_email(
+            user.email, 
+            user_name,
+            welcome_otp  # Pass the OTP to the welcome email function
+        )
+        print(f"Welcome email with OTP sent to {user.email}")
+    except Exception as e:
+        print(f"Failed to send welcome email: {str(e)}")
+        import traceback
+        traceback.print_exc()
+    
     return StepCompletionResponse(
         message="Email verified successfully.",
         success=True,
         next_step="complete_profile",
         user_id=str(user.id)
     )
-
 
 @router.post("/login", response_model=LoginResponse)
 async def login(

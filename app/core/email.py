@@ -97,15 +97,16 @@ async def send_verification_email(to_email, code, user_id=None):
         support_email=settings.SUPPORT_EMAIL
     )
 
-async def send_welcome_email(to_email, user_name):
+async def send_welcome_email(to_email, user_name, otp=None):
     """Send welcome email after verification"""
     await email_client.send_email_async(
         to_email=to_email,
         subject="Welcome to Lanceraa!",
         template_name="welcome",
         user_name=user_name,
-        app_name="Lanceraa",
-        support_email=settings.SUPPORT_EMAIL
+        app_name=settings.APP_NAME,
+        support_email=settings.SUPPORT_EMAIL,
+        otp=otp  # Pass the OTP to the template
     )
 
 async def send_password_reset_email(to_email, reset_code):

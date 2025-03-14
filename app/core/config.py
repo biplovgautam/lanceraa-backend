@@ -1,6 +1,8 @@
-from pydantic import BaseSettings, validator
+from pydantic_settings import BaseSettings
+from pydantic import field_validator
 import os
 from dotenv import load_dotenv
+from typing import List
 
 # Load environment variables
 load_dotenv()
@@ -14,7 +16,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
     
     # CORS settings
-    ALLOWED_ORIGINS: list = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:8000").split(",")
+    ALLOWED_ORIGINS_STR: str = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:8000")
     
     # Environment
     ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
@@ -33,14 +35,24 @@ class Settings(BaseSettings):
     # For testing: if True, prints emails to console instead of sending
     EMAIL_TEST_MODE: bool = os.getenv("EMAIL_TEST_MODE", "False").lower() == "true"
     
-    # New validation
-    @validator("EMAIL_USERNAME", "EMAIL_PASSWORD", pre=True)
-    def validate_email_credentials(cls, v, values, **kwargs):
-        if not v and kwargs["field"].name == "EMAIL_USERNAME":
-            print("Warning: Email username not set")
-        if not v and kwargs["field"].name == "EMAIL_PASSWORD":
-            print("Warning: Email password not set")
+    # New validation using Pydantic v2 syntax
+    @field_validator("EMAIL_USERNAME", "EMAIL_PASSWORD")
+    @classmethod
+    def validate_email_credentials(cls, v, info):
+        if not v:
+            print(f"Warning: {info.field_name} not set")
         return v
+
+    # Configuration for Pydantic v2
+    model_config = {
+        "env_file": ".env",
+        "case_sensitive": True,
+        "extra": "ignore"
+    }
+        # Property to get ALLOWED_ORIGINS as a list
+    @property
+    def ALLOWED_ORIGINS(self) -> List[str]:
+        return self.ALLOWED_ORIGINS_STR.split(",")
 
 # Create settings instance
 settings = Settings()
