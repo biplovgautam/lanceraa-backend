@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to {{ app_name }} - Freelancer</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background-color: #5D5FEF;
+            padding: 24px;
+            text-align: center;
+            color: white;
+        }
+        .header h1 {
+            margin: 0;
+            font-weight: 600;
+        }
+        .content {
+            padding: 32px 24px;
+        }
+        .feature-box {
+            background-color: #f7f9ff;
+            padding: 16px;
+            border-left: 4px solid #5D5FEF;
+            margin: 20px 0;
+        }
+        .footer {
+            background-color: #f5f5f5;
+            padding: 16px 24px;
+            color: #666;
+            font-size: 14px;
+            text-align: center;
+        }
+        .footer a {
+            color: #5D5FEF;
+            text-decoration: none;
+        }
+        p {
+            margin: 0 0 16px;
+        }
+        .action-button {
+            display: inline-block;
+            background-color: #5D5FEF;
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-weight: 500;
+            margin: 16px 0;
+            text-align: center;
+        }
+        .steps {
+            margin: 20px 0;
+        }
+        .step {
+            margin-bottom: 15px;
+            padding-left: 10px;
+            border-left: 2px solid #5D5FEF;
+        }
+        .step-number {
+            font-weight: bold;
+            color: #5D5FEF;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>{{ app_name }}</h1>
+        </div>
+        <div class="content">
+            <p>Hello {{ user_name }},</p>
+            
+            <p>Welcome to {{ app_name }}! Your account has been successfully verified and is now active.</p>
+            
+            <div class="feature-box">
+                <h3>As a freelancer on {{ app_name }}, you can:</h3>
+                <ul>
+                    <li>Showcase your skills and experience to potential clients</li>
+                    <li>Bid on relevant projects that match your expertise</li>
+                    <li>Build a strong portfolio and earning history</li>
+                    <li>Get paid securely for your valuable work</li>
+                </ul>
+            </div>
+            
+            <h3>Getting Started:</h3>
+            <div class="steps">
+                <div class="step">
+                    <span class="step-number">1.</span> Complete your profile with skills, experience, and portfolio
+                </div>
+                <div class="step">
+                    <span class="step-number">2.</span> Browse available projects that match your skills
+                </div>
+                <div class="step">
+                    <span class="step-number">3.</span> Submit quality proposals to stand out to clients
+                </div>
+                <div class="step">
+                    <span class="step-number">4.</span> Deliver excellent work and build your reputation
+                </div>
+            </div>
+            
+            <p>To start earning, complete your freelancer profile now:</p>
+            
+            <div style="text-align: center;">
+                <a href="{{ profile_url }}" class="action-button">Complete Your Profile</a>
+            </div>
+            
+            <p>We're excited to see your success on our platform!</p>
+            
+            <p>Best regards,<br>The {{ app_name }} Team</p>
+        </div>
+        <div class="footer">
+            <p>&copy; 2025 {{ app_name }}. All rights reserved.</p>
+            <p>If you need assistance, contact us at <a href="mailto:{{ support_email }}">{{ support_email }}</a></p>
+        </div>
+    </div>
+</body>
+</html>
