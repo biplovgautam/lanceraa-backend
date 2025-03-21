@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.exc import OperationalError
 from ..core.config import settings
 import smtplib
@@ -17,10 +17,11 @@ def check_database_connection():
     try:
         engine = create_engine(settings.DATABASE_URL)
         with engine.connect() as connection:
-            connection.execute("SELECT 1")  # Run a simple query to check the connection
-        return True
+            connection.execute(text("SELECT 1"))  # Use `text()` for raw SQL execution
+        return True, None
     except OperationalError as e:
         return False, str(e)
+
 
 # Email server connection check
 def check_email_server():
