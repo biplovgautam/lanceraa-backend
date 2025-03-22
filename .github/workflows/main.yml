@@ -1,0 +1,14 @@
+name: Health Check
+
+on:
+  schedule:
+    - cron: '*/14 * * * *'  # Runs every 14 minutes
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Make request to /API/health
+        run: |
+          curl -X GET "https://lanceraa-backend-a2mt.onrender.com/api/health" -o response.txt -w "HTTP Status: %{http_code}\n"
