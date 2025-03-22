@@ -5,7 +5,7 @@ on:
     - cron: '*/10 * * * *'  # Runs every 14 minutes
 
 jobs:
-  health-check:
+  cron:
     runs-on: ubuntu-latest
 
     steps:
